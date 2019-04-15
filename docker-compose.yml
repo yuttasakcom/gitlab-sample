@@ -14,7 +14,7 @@ services:
     restart: always
 
   gitlab:
-    image: gitlab/gitlab-ce:latest
+    image: gitlab/gitlab-ce:11.9.8-ce.0
     container_name: gitlab
     environment:
       GITLAB_OMNIBUS_CONFIG: |
@@ -38,7 +38,7 @@ services:
     restart: always
 
   gitlab-runner:
-    image: gitlab/gitlab-runner:latest
+    image: gitlab/gitlab-runner:v11.9.2
     container_name: gitlab-runner
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -53,7 +53,3 @@ services:
     image: registry:2
     container_name: registry
     restart: always
-
-  hello-world:
-    image: registry.example.com/test/react
-    build: .
