@@ -16,13 +16,11 @@ services:
   gitlab:
     image: gitlab/gitlab-ce:latest
     container_name: gitlab
-    hostname: gitlab.example.com
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'https://gitlab.example.com'
         nginx['listen_https'] = false
         nginx['listen_port'] = 80
-        nginx['ssl_protocols'] = "TLSv1 TLSv1.1 TLSv1.2"
         registry_external_url 'https://registry.example.com'
         gitlab_rails['registry_enabled'] = true
         registry_nginx['listen_https'] = false
@@ -46,6 +44,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /srv/gitlab-runner/config:/etc/gitlab-runner
       - ./ssl/gitlab.example.com/gitlab.example.com.crt:/etc/gitlab-runner/certs/ca.crt:ro
+      - ./ssl/gitlab.example.com/gitlab.example.com.crt:/etc/ssl/certs/ca-certificates.crt:ro
     links:
       - nginx:gitlab.example.com
     restart: always
