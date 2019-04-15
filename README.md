@@ -1,16 +1,27 @@
 # Gitlab Sample
 
+## Gen cert, key
+
+```
+
+```
+
 ## Register Gitlab-Runner
 
 ```bash
-docker-compose exec gitlab-runner gitlab-runner register -n --tls-ca-file /ssl/gitlab.example.com/gitlab.example.com.crt --tls-key-file /ssl/gitlab.example.com/gitlab.example.com.key --url https://gitlab.example.com --registration-token m6TsAsyYWQf_bCftrzbZ --description "docker-runner" --tag-list build --executor docker --docker-image "docker:latest" --docker-privileged
+docker-compose exec gitlab-runner gitlab-runner register -n --tls-ca-file /etc/gitlab-runner/certs/ca.crt --url https://gitlab.example.com --registration-token hJzbDkKcfHWzQ7-A1htN --description "my-runner" --tag-list build --executor docker --docker-image "docker:latest" --docker-privileged
+
+docker-compose exec gitlab-runner gitlab-runner register -n -tls-ca-file /etc/gitlab-runner/certs/ca.crt --url https://gitlab.example.com --registration-token hJzbDkKcfHWzQ7-A1htN --description "docker" --tag-list docker --executor docker --docker-image "docker:stable" --docker-privileged --run-untagged --locked="false"
+
+
+docker-compose exec gitlab-runner gitlab-runner register -n -tls-ca-file /etc/gitlab-runner/certs/ca.crt --url https://gitlab.example.com --registration-token zMERh-1Vp3AMFU13QG5y --description "docker" --tag-list docker --executor docker --docker-image "docker:stable" --docker-volumes /etc/hosts:/etc/hosts --docker-volumes /var/run/docker.sock:/var/run/docker.sock --docker-volumes /etc/gitlab-runner/certs/ca.crt:/etc/gitlab-runner/certs/ca.crt
 ```
 
 ## Copy ssl from gitlab-ce
 
 ```bash
-docker cp {container_id}:/etc/gitlab/ssl/gitlab.example.com.crt .
-docker cp {container_id}:/etc/gitlab/ssl/gitlab.example.com.key .
+docker cp 2854c1ea8c86:/etc/gitlab/ssl/gitlab.example.com.crt .
+docker cp 2854c1ea8c86:/etc/gitlab/ssl/gitlab.example.com.key .
 ```
 
 ## Options gitlab-ce
