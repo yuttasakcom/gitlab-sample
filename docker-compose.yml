@@ -10,46 +10,62 @@ services:
     command: /bin/bash -c "nginx -g 'daemon off;'"
     ports:
       - "443:443"
-      - "80:80"
+    networks:
+      dev-net:
     restart: always
 
   gitlab:
-    image: gitlab/gitlab-ce:11.9.8-ce.0
+    image: gitlab/gitlab-ce:latest
     container_name: gitlab
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'https://gitlab.example.com'
-        nginx['listen_https'] = false
-        nginx['listen_port'] = 80
+        nginx['listen_port'] = 443
+        nginx['redirect_http_to_https'] = true
         registry_external_url 'https://registry.example.com'
         gitlab_rails['registry_enabled'] = true
-        registry_nginx['listen_https'] = false
-        registry_nginx['listen_port'] = 8888
         nginx['ssl_certificate'] = "/etc/gitlab/ssl/gitlab.example.com.crt"
         nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/gitlab.example.com.key"
+        registry_nginx['enable'] = true
+        registry_nginx['ssl_certificate'] = "/etc/gitlab/ssl/registry.example.com.pem"
+        registry_nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/registry.example.com.key"
     volumes:
       - /srv/gitlab/config:/etc/gitlab
       - /srv/gitlab/logs:/var/log/gitlab
       - /srv/gitlab/data:/var/opt/gitlab
       - ./ssl/gitlab.example.com/gitlab.example.com.crt:/etc/gitlab/ssl/gitlab.example.com.crt:ro
       - ./ssl/gitlab.example.com/gitlab.example.com.key:/etc/gitlab/ssl/gitlab.example.com.key:ro
+      - ./ssl/registry.example.com/public.pem:/etc/gitlab/ssl/registry.example.com.pem:ro
+      - ./ssl/registry.example.com/private.key:/etc/gitlab/ssl/registry.example.com.key:ro
     ports:
       - "22:22"
+    networks:
+      dev-net:
+        aliases:
+          - gitlab.example.com
     restart: always
 
   gitlab-runner:
-    image: gitlab/gitlab-runner:v11.9.2
+    image: gitlab/gitlab-runner:v11.1.0
     container_name: gitlab-runner
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /srv/gitlab-runner/config:/etc/gitlab-runner
       - ./ssl/gitlab.example.com/gitlab.example.com.crt:/etc/gitlab-runner/certs/ca.crt:ro
-      - ./ssl/gitlab.example.com/gitlab.example.com.crt:/etc/ssl/certs/ca-certificates.crt:ro
-    links:
-      - nginx:gitlab.example.com
+    depends_on:
+      - "gitlab"
+    networks:
+      - dev-net
     restart: always
 
   registry:
     image: registry:2
     container_name: registry
+    networks:
+      - dev-net
     restart: always
+
+networks:
+  dev-net:
+    external:
+      name: "development"

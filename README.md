@@ -10,7 +10,10 @@ openssl req -newkey rsa:2048 -x509 -nodes -keyout ./ssl/gitlab.example.com/gitla
 
 ```bash
 ## Shell Passed
-docker-compose exec gitlab-runner gitlab-runner register -n -tls-ca-file /etc/gitlab-runner/certs/ca.crt --url https://gitlab.example.com --registration-token 3kz1WCsgXJB3Wuj1xPRJ --description "shell" --tag-list shell --executor shell
+docker-compose exec gitlab-runner gitlab-runner register -n -tls-ca-file /etc/gitlab-runner/certs/ca.crt --url https://gitlab.example.com --registration-token Du6YGsmNCskeZQhPvLDX --description "shell" --tag-list shell --executor shell
+
+## Docker Passed
+docker-compose exec gitlab-runner gitlab-runner register -n --url https://gitlab.example.com --registration-token cNkh2SiVudz1nviSUjH9 --description "docker" --tag-list docker --executor docker --docker-image "docker:stable" --docker-network-mode development --docker-volumes /var/run/docker.sock:/var/run/docker.sock
 ```
 
 ## Options gitlab-ce
