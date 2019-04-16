@@ -29,6 +29,8 @@ services:
         registry_nginx['enable'] = true
         registry_nginx['ssl_certificate'] = "/etc/gitlab/ssl/registry.example.com.pem"
         registry_nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/registry.example.com.key"
+        gitlab_rails['time_zone'] = "Asia/Bangkok"
+        nginx['client_max_body_size'] = "250m"
     volumes:
       - /srv/gitlab/config:/etc/gitlab
       - /srv/gitlab/logs:/var/log/gitlab
@@ -43,10 +45,11 @@ services:
       dev-net:
         aliases:
           - gitlab.example.com
+          - registry.example.com
     restart: always
 
   gitlab-runner:
-    image: gitlab/gitlab-runner:v11.1.0
+    image: gitlab/gitlab-runner:latest
     container_name: gitlab-runner
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
